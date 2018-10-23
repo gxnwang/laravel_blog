@@ -2,9 +2,11 @@
 
 @section('content')
 
+
     <form action="{{route('user.store')}}" method="post">
         @csrf
-{{--        {{csrf_field()}}--}}
+        {{--        {{csrf_field()}}--}}
+
         <div class="card">
             <div class="card-header">
                 用户注册

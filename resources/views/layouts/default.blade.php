@@ -28,6 +28,7 @@
             </form>
         </div>
     </nav>
+    @include('layouts.errors')
     @yield('content')
 </div>
 <script src="/js/app.js"></script>
