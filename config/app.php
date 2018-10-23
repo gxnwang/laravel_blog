@@ -22,7 +22,7 @@ return [
     |
     | This value determines the "environment" your application is currently
     | running in. This may determine how you prefer to configure various
-    | services your application utilizes. Set this in your ".env" file.
+    | services the application utilizes. Set this in your ".env" file.
     |
     */
 
@@ -160,7 +160,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class, // laravel ide helper
     ],
 
     /*

@@ -11,4 +11,8 @@
 |
 */
 
-Route::get('/', 'IndexController@home');
+
+
+Route::get('/','IndexController@home');
+
+Route::resource('user','UserController');

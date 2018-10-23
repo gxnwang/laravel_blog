@@ -23,18 +23,25 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('user.create');
     }
+
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request)
     {
-        //
+
+        $this -> validate($request,[
+            'name' =>'required|min:3',
+            'email' => 'required|unique:users|email',
+            'password' => 'required|min:5|confirmed',
+        ]);
+        dd($request->all());
     }
 
     /**
