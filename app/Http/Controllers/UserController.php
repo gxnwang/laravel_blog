@@ -6,6 +6,16 @@ use App\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller {
+
+    public function __construct() {
+        $this -> middleware('auth',[
+            'except' => ['index','show','store','create']
+        ]);
+        $this -> middleware('guest',[
+           'only' => ['create','store']
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -55,11 +65,11 @@ class UserController extends Controller {
     /**
      * Display the specified resource.
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param User $user
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show($id) {
-        //
+    public function show(User $user) {
+        return view('user.show',compact('user'));
     }
 
     /**
@@ -68,19 +78,31 @@ class UserController extends Controller {
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id) {
-        //
+    public function edit(User $user) {
+        return view('user.edit',compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param User $user
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request, $id) {
-        //
+    public function update(Request $request, User $user) {
+
+        $this->validate($request,[
+            'name' => 'required|min:3',
+            'password' => 'nullable|min:5|confirmed',
+        ]);
+        $user -> name = $request -> name;
+        if ($request->password){
+            $user -> password = bcrypt($request -> password);
+        }
+        $user -> save();
+        session() ->flash('success','修改成功');
+        return redirect()->route('user.show',$user);
     }
 
     /**
@@ -89,7 +111,7 @@ class UserController extends Controller {
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id) {
+    public function destroy(User $user) {
         //
     }
 }

@@ -28,6 +28,7 @@
             </ul>
             <form class="form-inline my-2 my-lg-0">
                 @auth
+                    <a href="{{route('user.edit',auth()->user())}}" class="btn btn-success my-2 my-sm-0 mr-2">修改资料</a>
                     <a href="{{route('logout')}}" class="btn btn-success my-2 my-sm-0 mr-2">退出登录</a>
                 @else
                     <a href="{{route('user.create')}}" class="btn btn-success my-2 my-sm-0 mr-2">注册</a>

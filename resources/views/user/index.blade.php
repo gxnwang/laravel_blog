@@ -24,7 +24,7 @@
                         <td>
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <button type="button" class="btn btn-danger">删除</button>
-                                <button type="button" class="btn btn-primary">查看</button>
+                                <a href="{{route('user.show',$user)}}" class="btn btn-primary">查看</a>
 
                             </div>
                         </td>

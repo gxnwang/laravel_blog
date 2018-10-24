@@ -13,6 +13,7 @@
 
 
 Route::get('/', 'IndexController@home')->name('home');
+Route::get('home', 'IndexController@home')->name('home');
 
 Route::resource('user', 'UserController');
 
