@@ -79,6 +79,8 @@ class UserController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function edit(User $user) {
+        $this->authorize('update',$user);
+
         return view('user.edit',compact('user'));
     }
 
