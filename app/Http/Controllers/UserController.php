@@ -114,6 +114,9 @@ class UserController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy(User $user) {
-        //
+        $this ->authorize('delete',$user);
+        $user -> delete();
+        session() -> flash('success','删除成功');
+        return redirect()-> route('user.index');
     }
 }
