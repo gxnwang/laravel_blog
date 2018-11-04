@@ -23,12 +23,16 @@
                         <td>{{$user->name}}</td>
                         <td>
                             <div class="btn-group" role="group" aria-label="Basic example">
-                                <form action="{{route('user.destroy',$user)}}" method="post">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" name="delete" class="btn btn-danger">删除</button>
-                                </form>
-                                <button type="button" class="btn btn-success">修改</button>
+                                @can('delete',$user)
+                                    <form action="{{route('user.destroy',$user)}}" method="post">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" name="delete" class="btn btn-danger">删除</button>
+                                    </form>
+                                @endcan
+                                @can('update',$user)
+                                    <a href="{{route('user.edit',$user)}}" class="btn btn-success">修改</a>
+                                @endcan
                                 <a href="{{route('user.show',$user)}}" class="btn btn-primary">查看</a>
 
                             </div>

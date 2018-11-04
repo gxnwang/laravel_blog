@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RegMail;
 use App\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller {
 
     public function __construct() {
-        $this -> middleware('auth',[
-            'except' => ['index','show','store','create']
+        $this->middleware('auth', [
+            'except' => ['index', 'show', 'store', 'create', 'confirmEmailToken']
         ]);
-        $this -> middleware('guest',[
-           'only' => ['create','store']
+        $this->middleware('guest', [
+            'only' => ['create', 'store']
         ]);
     }
 
@@ -24,7 +25,7 @@ class UserController extends Controller {
     public function index() {
 
         $users = User::query()->paginate(10);
-        return view('user.index',compact('users'));
+        return view('user.index', compact('users'));
     }
 
     /**
@@ -46,19 +47,21 @@ class UserController extends Controller {
     public function store(Request $request) {
 
         $data = $this->validate($request, [
-            'name' => 'required|min:3',
-            'email' => 'required|unique:users|email',
+            'name'     => 'required|min:3',
+            'email'    => 'required|unique:users|email',
             'password' => 'required|min:5|confirmed',
         ]);
         $data['password'] = bcrypt($data['password']);
         // 添加用户
-        User::create($data);
+        $user = User::query()->create($data);
         // 自动登录
-        \Auth::attempt([
-            'email' => $request->email,
-            'password' => $request->password
-        ]);
-        session()->flash('success', '注册成功，自动登录成功');
+        //        \Auth::attempt([
+        //            'email' => $request->email,
+        //            'password' => $request->password
+        //        ]);
+        // 发送邮件
+        \Mail::to($user)->send(new RegMail($user));
+        session()->flash('success', '请查看邮箱完成验证');
         return redirect()->route('home');
     }
 
@@ -69,7 +72,7 @@ class UserController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(User $user) {
-        return view('user.show',compact('user'));
+        return view('user.show', compact('user'));
     }
 
     /**
@@ -79,9 +82,9 @@ class UserController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function edit(User $user) {
-        $this->authorize('update',$user);
+        $this->authorize('update', $user);
 
-        return view('user.edit',compact('user'));
+        return view('user.edit', compact('user'));
     }
 
     /**
@@ -94,17 +97,17 @@ class UserController extends Controller {
      */
     public function update(Request $request, User $user) {
 
-        $this->validate($request,[
-            'name' => 'required|min:3',
+        $this->validate($request, [
+            'name'     => 'required|min:3',
             'password' => 'nullable|min:5|confirmed',
         ]);
-        $user -> name = $request -> name;
-        if ($request->password){
-            $user -> password = bcrypt($request -> password);
+        $user->name = $request->name;
+        if ($request->password) {
+            $user->password = bcrypt($request->password);
         }
-        $user -> save();
-        session() ->flash('success','修改成功');
-        return redirect()->route('user.show',$user);
+        $user->save();
+        session()->flash('success', '修改成功');
+        return redirect()->route('user.show', $user);
     }
 
     /**
@@ -114,9 +117,25 @@ class UserController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy(User $user) {
-        $this ->authorize('delete',$user);
-        $user -> delete();
-        session() -> flash('success','删除成功');
-        return redirect()-> route('user.index');
+        $this->authorize('delete', $user);
+        $user->delete();
+        session()->flash('success', '删除成功');
+        return redirect()->route('user.index');
+    }
+
+    public function confirmEmailToken($token) {
+        $user = User::query()->where('email_token', $token)->first();
+        if ($user) {
+            $user->email_active = true;
+            $user->save();
+            session()->flash('验证成功');
+            // 自动登录
+            //\Auth::attempt($user->toArray());
+            \Auth::login($user);
+
+            return redirect('/');
+        }
+        session()->flash('验证失败');
+        return redirect('/');
     }
 }
